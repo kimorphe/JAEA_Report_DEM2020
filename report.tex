@@ -1,0 +1,94 @@
+﻿\documentclass[11pt,a4j]{jarticle}
+\usepackage[dvipdfmx]{graphicx,color}
+\usepackage{wrapfig}
+\usepackage{amssymb}
+\setlength{\topmargin}{-1.5cm}
+\setlength{\textwidth}{15.5cm}
+\setlength{\textheight}{25.2cm}
+\newlength{\minitwocolumn}
+\setlength{\minitwocolumn}{0.5\textwidth}
+\addtolength{\minitwocolumn}{-\columnsep}
+%\addtolength{\baselineskip}{-0.1\baselineskip}
+%
+\def\Mmaru#1{{\ooalign{\hfil#1\/\hfil\crcr
+\raise.167ex\hbox{\mathhexbox 20D}}}}
+%
+\begin{document}
+\newcommand{\fat}[1]{\mbox{\boldmath $#1$}}
+\newcommand{\D}{\partial}
+\newcommand{\w}{\omega}
+\newcommand{\ga}{\alpha}
+\newcommand{\gb}{\beta}
+\newcommand{\gx}{\xi}
+\newcommand{\gz}{\zeta}
+\newcommand{\vhat}[1]{\hat{\fat{#1}}}
+\newcommand{\spc}{\vspace{0.7\baselineskip}}
+\newcommand{\halfspc}{\vspace{0.3\baselineskip}}
+\bibliographystyle{unsrt}
+%\pagestyle{empty}
+\newcommand{\twofig}[2]
+ {
+   \begin{figure}[h]
+     \begin{minipage}[t]{\minitwocolumn}
+         \begin{center}   #1
+         \end{center}
+     \end{minipage}
+         \hspace{\columnsep}
+     \begin{minipage}[t]{\minitwocolumn}
+         \begin{center} #2
+         \end{center}
+     \end{minipage}
+   \end{figure}
+ }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\vspace*{\baselineskip}
+\begin{center}
+{\Large \bf 令和2年度 共同研究報告書}
+\end{center}
+\vspace{2mm}
+\begin{center}
+{\LARGE \bf 
+メソスケールシミュレーションによる緩衝材の特性評価に関する研究} 
+\end{center}
+\begin{center}
+岡山大学環境生命科学研究科\\
+木本和志
+\end{center}
+\vspace{10mm}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{はじめに}
+\input{1_intro.tex}
+\section{粗視化MD計算方法}
+%\input{2_model.tex}
+\section{計算例}
+%\input{4_results.tex}
+\section{まとめと今後の課題}
+粘土含水系の組織構造を特徴づける分布として，X線回折(XRD)パターン，動径分布関数(RDF)，局所密度分布と
+配向確率密度の4種類の分布をメソMD計算結果から評価する方法を示した．その結果，メソMD
+結果から得たXRDパターンは，実際に実験でも観測されるピークが現れることを示した．
+また，RDFのピーク数をカウントすることによって積層数の見積が得られることを示し，こちらについても
+実験結果として観測される程度の値となることが分かった．以上の結果は，これまでに開発してきた
+メソMD解析法の妥当性を裏付けるものと言える．
+局所密度分布と配向性については，メソMD計算の結果を詳しく調べ，粘土含水系の圧縮凝集挙動や
+物質輸送特性の解明において，有用なツールになると考えられる．
+特に，メソ間隙とナノ間隙を区別することは局所密度のデータを用いて実現可能と考えられ，
+今後マルチスケール解析を行う際には，ナノ構造を均質化してメソ多孔質体モデルを作成する
+際に直接利用できると考えられる．また，配向性に関しては，今回の結果からは明確な発見は
+なかったものの，局所的な配向性の変化は，圧縮性や透水，拡散等の物質輸送現象の異方性について
+理解する上で重要な指標に成りうることが期待できる．
+今後は，実験データとの比較により，メソMD結果の妥当性を検証することが課題となる．
+また，ナノメートルからマイクロメートルスケールの透水問題は，緩衝材の膨潤や物質輸送挙動
+を理解する上で重要であることから，水分浸透問題へ，メソMD法の拡張を図ることも重要な課題
+の一つとなる．その結果，マクロな輸送係数や変形特性を分子スケールでの計算から定量的に評価
+することが可能となれば，実験や直接観測が難しい種々の物理化学的条件においてマクロ物性を
+予測することで，連続体ベースでの熱や水，力学についての解析の詳細化や高度化にも貢献できると考えられる．
+\begin{thebibliography}{99}
+\bibitem{Warren}
+	B.E. Warren, "X-ray diffraction", Dover Publication, New York, 1990.
+\bibitem{Koide}
+	小出昭一郎,"物理現象のフーリエ解析", ちくま学芸文庫, 2018.
+\end{thebibliography}
+
+\end{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
