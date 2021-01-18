@@ -1,0 +1,393 @@
+﻿%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{粗視化分子動力学(CGMD)法}
+本研究で用いる粗視化メソMD法では，粘土分子の単位構造とそこに水和された水分子を
+一つの粗視化粒子として扱う．一つの粘土分子は，分子サイズに応じた数の粗視化粒子を
+連結して用いることで表現される．粘土含水系の挙動は，粗視化粒子の集合としての
+粘土分子モデルが複数存在して力学的に相互作用をする様を解析することで調べられる．
+それぞれの粗視化粒子の位置と速度は，分子内および分子間の相互作用力に従って運動する
+ため，粗視化粒子に作用する分子内力，分子間力をモデル化し，運動方程式を数値的積分
+することが，メソMD解析に行うべき作業となる．以下，メソMD法で解くべき運動方程式と，
+本研究で用いる粗視化粒子間の相互作用モデルを示す．\\
+
+メソMDで扱う粘土分子の数を$M$, 第$m$番目の粘土分子を構成する粗視化粒子の数を$n(m)$と表す．
+粗視化粒子数の合計を
+\begin{equation}
+	N=\sum_{m=1}^M n(m)
+	\label{eqn:N_tot}
+\end{equation}
+とし，各粗視化粒子を識別するために，粒子には1から$N$の通し番号が振られているとする．
+時刻$t$における粒子$i$の位置を$\fat{x}_i(t)$,速度を$\fat{v}_i(t)$,質量を$m_i$
+とすれば，粒子$i$に関する運動方程式は
+\begin{equation}
+	m_i \dot {\fat{v}}_i =\fat{f}_i ,\ \ 
+	\dot{\fat{x}}_i = \fat{v}_i, \ \ ( i =1,2,\cdots N )
+	\label{eqn:eq_mot}
+\end{equation}
+と表される．ここに，$\fat{f}_i$は，粒子$i$に作用する力を表し，その内訳は
+分子間力$\fat{f}_i^{U}$と分子内力$\fat{f}_i^{K}$に分割でき
+\begin{equation}
+	\fat{f}_i=\fat{f}_i^U+\fat{f}_i^K
+	\label{eqn:f_tot}
+\end{equation}
+と表わされる．第$m$番目の粘土分子を構成する粒子を，粒子番号の集合により
+\begin{eqnarray}
+	\fat{I}(m) &=&
+	\left\{ 
+		i_1(m), \, i_2(m), \, \cdots, i_{n(m)}(m)
+	\right\}
+	 \nonumber \\
+	&=&
+	\left\{ 
+		\left. i_k(m)\right| k=1,\cdots n(m)
+	\right\}
+	\label{eqn:set_Im}
+\end{eqnarray}
+と表す．ここで,粒子$i$が属する分子の番号を$m={\cal M}(i)$，分子${\cal M}(i)$を
+構成する粒子の中で，粒子$i$が第$k$番目のものであるとき，インデックス$k$を
+$k={\cal K}(i)$と書くことにする．一方，分子$m$の第$k$粒子に与えられた，
+全粗視化粒子中での通し番号を$i=i(m,k)$と表す．このような粒子の参照方法を用いれば，
+メソMD計算に用いる分子内力を次のように書くことができる．
+\begin{equation}
+	\fat{f}^K_i(\fat{x}_i)=
+	-\sum_{j \in \fat{I}(m(i))} K_{ij}
+	 \left( \left| \fat{x}_i -\fat{x}_j \right|-r^0_{ij}\right)
+	\hat{\fat{r}}_{ij}
+	\label{eqn:}
+\end{equation}
+ここで，$\hat{\fat{r}}_{ij}$は粒子$j$から粒子$i$の方向を指す単位ベクトル
+\begin{equation}
+	\hat{\fat{r}}_{ij} = \frac{\fat{x}_i-\fat{x}_j}
+	{r_{ij}}, \ \ \left( r_{ij}=\left| \fat{x}_i-\fat{x}_j\right|\right)
+	\label{eqn:}
+\end{equation}
+を，$K_{ij}$は第一および第2近接粒子間を連結するバネのバネ定数$K_1$，$K_2$により
+\begin{equation}
+	K_{ij}=\left\{
+	\begin{array}{cc}
+		K_1 & \left(\left|{\cal K}(i)-{\cal K}(j)\right|=1\right) \\
+		K_2 & \left(\left|{\cal K}(i)-{\cal K}(j)\right|=2\right) \\
+		0   & (otherwise)
+	\end{array}
+	\right.
+	\label{eqn:}
+\end{equation}
+で与えられる定数を意味する．また，$r^0_{ij}$は，分子内力を与える全てのバネが
+中立状態にあるとき，すなわち，分子内にひずみが発生していない状態での粒子$i$と
+粒子$j$間の距離を表す．
+一方，分子間力のモデルには次のようなポテンシャル関数を用いる．
+\begin{equation}
+	\fat{f}_i^U(\fat{x}_i)
+	=
+	-\nabla_{x_i} 
+	\left\{ 
+		\sum_{j=1, \, j \neq i}^N U\left(\fat{x}_i,\,\fat{x}_j; \sigma \right)
+	\right\}
+	\label{eqn:}
+\end{equation}
+ここで$U(\fat{x}_i,\fat{x}_j;\sigma)$は，特性距離$\sigma$をパラメータにもつ
+レナード-ジョーンズ(LJ)型のポテンシャル関数
+\begin{equation}
+	U(\fat{x}_i,\fat{x}_j; \sigma) 
+	= 4 \varepsilon 
+	\left\{ 
+	\left(\frac{\sigma}{r_{ij}}\right)^{12}
+	-
+	\left(\frac{\sigma}{r_{ij}}\right)^6
+	\right\}
+	\label{eqn:}
+\end{equation}
+を意味する．\\
+
+以上の方程式に含まれる定数やパラメータの，物理的意味と数値について述べる．
+粗視化粒子の設定に従って決まる量には，質量$m_i$と分子間力を与えるバネの
+自然長$r^0_{i,i+1}, r^0_{i,i+2}$がある．本研究では，粗視化の単位を粘土分子
+の単位構造としているため，モンモリロナイトの分子構造から
+\begin{equation}
+	m=2.468\times 10 ^{-24}[{\rm kg}]
+	, \ \ 
+	r^0_{i,i+1}=1[{\rm nm}], \ \ 
+	r^0_{i,i+2}=2[{\rm nm}]
+	\label{eqn:}
+\end{equation}
+となる．膨潤状態に応じた層間距離を定めるパラメータ$\sigma$は，モンモリロナイト
+についてX線回折試験等の結果から知られている層間距離を参考に，表\ref{tbl:tbl_sig}
+に示す範囲で自由に設定することができる．
+\begin{table}[h]
+	\begin{center}
+	\caption{分子間相互作用ポテンシャルにおける特性距離と膨潤状態の対応.}
+	\vspace{3mm}
+	\begin{tabular}{c||c|c|c|c}
+		膨潤状態 & 0層 & 1層 & 2層 & 3層 \\
+		\hline
+		特性距離$\sigma$[{\rm nm}]& 0.9 & 1.2 & 1.5 & 1.8 \\
+	\end{tabular}
+	\label{tbl:tbl_sig}
+	\end{center}
+\end{table}
+一方，分子内力を定めるパラメータ$K_1, K_2$と,分子間相互作用の強さを与える
+パラメータ$\varepsilon$は，実験や理論的に決定することが難しいため，
+別途行った水和粘土の分子動力学計算結果を参考にして，以下の数値を与える．
+\begin{equation}
+	K_1=2,000[{\rm N/m}], \ \ 
+	K_2=4,000[{\rm N/m}], \ \ 
+	\varepsilon=1.0\times 10^{-19}[{\rm Nm}]
+	\label{eqn:}
+\end{equation}
+以上のように，本研究の粗視化MD法では，マクロ現象から推定する必要のある
+パラメータが含まれていないことが重要な点である．
+%
+\section{不均一な水和状態を表現するためのモデル}
+粘土分子表面に水和した水分の移動を許容する場合，空間的に水分量の偏りが生じる．
+そのような状況をメソMD計算上で表現するためには，粗視化粒子毎に水和水の量が
+異なることを表現できるモデルが必要になる．前節で述べたように，粗視化粒子に
+属する水和水の量は，LJポテンシャルの特性距離$\sigma$の値で制御される．
+これまでの粗視化メソMD計算では，$\sigma$の値は全ての粗視化粒子で同一かつ
+時間的にも変化しないとしていた．これに対して本研究では，$\sigma$が粒子毎
+に異なり，さらに，粘土分子の一方の面と他方の面(表裏面)における水和水分量
+が異なる状態も表現できるように，特性距離$\sigma$に以下のように方向依存性
+を与える．\\
+
+粒子$i$に属する水分量を表現するための特性距離を$\sigma_i(\theta_i)$と表す．
+ここに$\theta_i$は，粒子位置$\fat{x}_i$において，粘土分子表面への
+接線方向から測ったポテンシャルの計算点$\fat{y}$の方位を表す．
+図\ref{fig:fig9}に示すように，粒子$i$の位置$\fat{x}_i$における
+単位接線ベクトルを$\hat{\fat{t}}_i$, 単位法線ベクトルを$\hat{\fat{n}}_i$
+とするとき，$\fat{x}_i$から$\fat{y}$を指す単位ベクトルは
+\begin{equation}
+	\hat{\fat{r}}=\frac{\fat{y}-\fat{x}_i}{\left| \fat{y}-\fat{x}_i\right|}
+	\label{eqn:def_rhat}
+\end{equation}
+と表され，方位$\theta_i$は次の式で与えられる．
+\begin{equation}
+	\theta_i = {\rm sgn} (\hat{\fat{n}}_i \cdot \fat{r}) 
+	\cos^{-1}\left( \hat{\fat{t}}_i\cdot \hat{\fat{r}}\right)
+	\label{eqn:def_th}
+\end{equation}
+なお，粘土分子の表裏面は，単位法線ベクトル$\pm \hat{\fat{n}}_i$の符号で
+区別することができるので，以下では$\hat{\fat{n}}$側の水分量を表す特性距離を
+$\sigma^+_i$, $-\hat{\fat{n}}$側の水分量を表す特性距離を
+$-\sigma^+_i$,と下記，表裏面毎に量の水分を保持した状態を表現できるようにする．
+一方， 2つの粗視化粒子間に働く分子間相互作用力を計算するための${\sigma}$の値は，
+粘土分子内で隣接する粗視化粒子間の分子間相互作用は無視できると考えられるため，
+$\hat{\fat{t}}_i$方向($\theta_i=0,\pi$)の方向では，
+$\sigma$を$\sigma_i(0)=\sigma^0=1.35$[nm]となるようにする．
+これ以外の方位$\theta_i$では，長軸と短軸径が$\sigma^\pm$と
+$\sigma_0$で与えられる楕円で補間して与える．
+すなわち，
+\begin{equation}
+	\left( \frac{\sigma_t}{\sigma^0} \right)^2
+	+
+	\left( \frac{\sigma_n}{\sigma^{{\rm sgn}(\theta_i)}_i} \right)^2
+	=
+	1
+	\label{eqn:sigma_ellip}
+\end{equation}
+と
+\begin{equation}
+	\sigma_t=\sigma(\theta_i)\cos\theta_i, \ \ 
+	\sigma_n=\sigma(\theta_i)\sin\theta_i
+	\label{eqn:local_basis}
+\end{equation}
+%\begin{equation}
+%	\sigma=\sqrt{\sigma_t^2 +\sigma_n^2}
+%	\label{eqn:}
+%\end{equation}
+とから，
+\begin{equation}
+	\frac{1}{\sigma_i(\theta_i)}
+	=
+	\sqrt{
+		\left( 
+		\frac{\cos\theta_i}{\sigma_0} 
+		\right)^2
+		+
+		\left( 
+			\frac{\sin\theta_i}{\sigma_i^{{\rm sgn}(\theta_i)}}
+		\right)^2
+	}
+	\label{eqn:sigma_th}
+\end{equation}
+によって与える．
+粒子$i$と粒子$j$の間で作用する分子間力を計算するときには，
+以上の方向依存性を持つ特性距離$\sigma_i,\sigma_j$を,
+それぞれの粒子について
+\begin{equation}
+	\theta_{ij}={\rm sgn} \left(\hat{\fat{n}_i}\cdot\hat{\fat{r}}_{ij} \right) 
+	\cos^{-1}(\hat{\fat{t}_i}\cdot \hat{\fat{r}}_{ij})
+	\label{eqn:def_thij}
+\end{equation}
+として，
+\begin{equation}
+	\sigma_i=\sigma_i(\theta_{ij}), \ \
+	\sigma_j=\sigma_j(\theta_{ji})
+	\label{eqn:def_thi_thj}
+\end{equation}
+で計算し，これらの平均：
+\begin{equation}
+	\bar \sigma= \frac{\sigma_i(\theta_{ij})+\sigma_j(\theta_{ji})}{2}
+	\label{eqn:def_thb}
+\end{equation}
+をLJポテンシャルの特性距離として用いる．このようにすることで，相互作用を計算する
+粗視化粒子の相対距離と方向に応じて引力と斥力圏が定まり，
+水和水分量に応じた相互作用力を与えることができる．
+%--------------------
+\begin{figure}[h]
+	\begin{center}
+%	\includegraphics[width=0.5\linewidth]{Figs/fig7.eps} 
+	\end{center}
+	\caption{
+		粗視化粒子の向きを表すために用いる単位接線
+		$\hat{\fat{t}}_i,\hat{\fat{t}}_j$
+		および, 単位法線ベクトル.
+		$\hat{\fat{n}}_i,\hat{\fat{n}}_j$. 
+		$\theta_{ij}$は粒子位置$\fat{x}_i$から$\fat{x}_j$を望む方向を，
+		$\theta_{ji}$は$\fat{x}_j$から$\fat{x}_i$を望む方向を，
+		それぞれの粒子位置における接線ベクトルから測ったときの角度を表す．
+	} 
+	\label{fig:fig9}
+\end{figure}
+%--------------------
+%\begin{equation}
+%	\frac{1}{\sigma_i(\theta_{ij})}
+%	=
+%	\sqrt{
+%		\left( 
+%		\frac{\cos\theta_{ij}}{\sigma_0} 
+%		\right)^2
+%		+
+%		\left( \frac{\sin\theta_{ij}}{\sigma_{{\rm sgn}(\theta_{ij})}} \right)^2
+%	}
+%	\label{eqn:}
+%\end{equation}
+\section{水和水移動のモデル}
+粘土含水系が非平衡状態にあるとき，時間経過に伴い系全体のもつポテンシャルエネルギーが
+低下する方向に状態が推移する．従って，系全体のポテンシャルエネルギーが現在の状態よりも
+下がる水分の配置をメソMD計算の途上で見つけることができれば，水分移動を考慮しながら，
+水和粘土の運動を追跡することができる．メソMD計算における粗視化粒子系全体のエネルギー$E_{tot}$は，各粒子の持つエネルギー$E_i$の総和であるため，
+\begin{equation}
+	E_{tot}(\fat{\sigma},\fat{V},\fat{X})=\sum_{i=1}^{N}E(i), 
+	 \ \ 
+	 \left( \fat{\sigma}=\left\{ \sigma^{\pm}_i \right\}
+	 ,
+	\ \
+	 \fat{V}=\left\{ \fat{v}_i\right\}
+, \fat{X}=\left\{\fat{x}_i \right\} 
+	 \right)
+	\label{eqn:Etot}
+\end{equation}
+と表すことができる．ここで，$\fat{\sigma}$は，全ての粗視粒子の
+もつ水分量(系全体での水分分布)を表す$2N$次元のベクトルを，
+$\fat{X}$と$\fat{V}$は，粒子系の位置と速度を表す$2N$次元のベクトルである．
+式(\ref{eqn:Etot})は，これらを引数に書くことで，全エネルギーが
+位置$\fat{X}$，速度$\fat{V}$，水分分布$\fat{\sigma}$に依存する
+ことを明示することを意図している．各粗視化粒子のもつエネルギーは，
+粘土分子の表面(+面)と裏面(-面)に水和した水分に関連付けられるものの，
+2つに分割することができる．すなわち，
+\begin{equation}
+	E(i)=E^+(i)+E^-(i)
+	\label{eqn:sum_Epm}
+\end{equation}
+と表すことができる．さらに，$E^\pm(i)$は，次のような4つの形態のエネルギーの和
+として表すことができる．
+\begin{equation}
+	E^\pm(i)=E^\pm_{U}(i)+E^\pm_K(i)+E^\pm_{H_2O}(i)+E^\pm_{Surf}(i)
+	\label{eqn:Emodes}
+\end{equation}
+ここに，
+$E^{\pm}_U$は，粘土分子間の相互作用力によるポテンシャルエネルギーを，
+$E^\pm_K$は運動エネルギーを表す．また，$E^\pm_{H_2O}$は
+粘土分子とそれに水和した水分子の相互作用によって生じるポテンシャル
+エネルギーを表し，$E^\pm_{Surf}$は水和水の表面自由エネルギーを意味する．
+このうち$E^\pm_U(i)$は，異方的LJポテンシャルと式(\ref{eqn:def_thij})を用いて
+\begin{equation}
+	E_U^\pm(i)=\sum_{j} U(\fat{x}_i,\fat{x}_j)H({\rm sgn}(\pm \theta_{ij}))
+	\label{eqn:def_EU}
+\end{equation}
+によって計算できる．ただし$H(x)$はヘビサイドの単位ステップ関数：
+\begin{equation}
+	H(x)=\left\{
+	\begin{array}{cc}
+		1& (x>0)  \\
+		0& (x\leq 0) 
+	\end{array}
+	\right.
+	\label{eqn:Step_func}
+\end{equation}
+である．運動エネルギーは，粒子速度$\fat{v}_i$を用い，
+\begin{equation}
+	E_K^{\pm}(i)=\frac{1}{2}m^{\pm}(i) |\fat{v}_i|^2 
+	\label{eqn:def_EK}
+\end{equation}
+と書くことができる．ここに，$m^\pm(i)$は,粒子質量$m_i$の分割
+\begin{equation}
+	m_i=m^+(i)+m^-(i)
+	\label{eqn:mi_split}
+\end{equation}
+を表し,$m^{\pm}$はそれぞれ，$\pm\hat{\fat{n}}_i$側の分子表面に
+関連付けることのできる質量を意味する．$m^\pm$は，
+無水粘土分子の単位構造が持つ質量を$m_{clay}$, 
+水分子1個の質量$m_{H_2O}$,
+水和水の分子層数$n^{\pm}$を用いて
+\begin{equation}
+	m^{\pm}(i)=\frac{m_{clay}}{2}+\frac{3}{2}n_{H_2O}^{\pm}(i)m_{H_2O}
+	\label{eqn:def_mpm}
+\end{equation}
+と書くことができる．なお，$\pm$は着目する粘土分子の面の向きを表し，
+係数$3$は，粘土分子単位構造に一層の水分子が水和したときの
+単位構造あたりの水分子数である．
+水和水と粘土分子の相互作用によるポテンシャルエネルギーに関しては，
+水和数$n^\pm_{H_2O}$の関数になると仮定し，
+\begin{equation}
+	E_{H_2O}^\pm(i)=U_{hyd}
+	\left(
+		n^\pm_{H_2O}(i)
+	\right)
+	\label{eqn:def_EH2O}
+\end{equation}
+と表しておく．$U_{hyd}(n)$は水和数によるエネルギー変化を定める
+関数である．粘土分子への水和挙動を$n^\pm$が離散的な値だけをとるとして
+モデル化する場合，$U_{hyd}(n)$はデルタ間数列で，
+水和数が連続的に変化する場合は，水和数$n$が整数のときに
+極小となるような連続関数として与えればよい．本研究では後者のモデルを用いる
+ことを検討しているが，後述する数値計算例ではこのエネルギーの変動は考慮していない.
+最後に，水分子の表面エネルギーは，気相-水分子相界面の界面自由エネルギー
+$\gamma$と，粒子$i$の液相-気相界面$S^\pm_{a/w}(i)$を用いて，
+\begin{equation}
+	E_{Surf}^{\pm}(i)=\int_{S^\pm_{a/w}(i)}\gamma dS 
+	\label{eqn:def_Esurf}
+\end{equation}
+で与えられる．なお，液相と固相(粘土分子)界面のエネルギーは
+$E^\pm_{H_2O}$に含まれると考えておく．
+以上のようにして計算される全エネルギーについて，水分分布$\fat{\sigma}$に
+関する摂動:
+\begin{equation}
+	\delta \fat{\sigma}=\left\{ \delta \sigma^\pm_i \right\}
+	\label{eqn:var_sig}
+\end{equation}
+を，全水分量一定:
+\begin{equation}
+	\sum_{i=1}^N \left( 
+		\delta \sigma^+_i
+		+
+		\delta \sigma^-_i
+	\right)
+	=0
+\end{equation}
+の条件において与え，そのときの全エネルギ-$E_{tot}$の変分
+\begin{equation}
+	\Delta E_{tot}(\fat{\sigma},\fat{V},\fat{X})=
+	E_{tot}(\fat{\sigma}+\delta \fat{\sigma},\fat{V},\fat{X})
+	-
+	E_{tot}(\fat{\sigma},\fat{V},\fat{X})
+	\label{eqn:}
+\end{equation}
+を数値的に計算する．
+$\Delta E_{tot}$が負の場合には水分分布を
+\begin{equation}
+	\fat{\sigma}\rightarrow \fat{\sigma}+\delta \fat{\sigma}
+	\label{eqn:sig_update}
+\end{equation}
+と更新する．運動方程式を数値的に積分する際の適当な時間ステップにおいて，
+このような規則に従い水分分布を変更することで，水和粘土分子の運動と変形
+だけでなく，粘土分子と水和水の相対的な運動(水和水移動)のシミュレーション
+を行うことができる．
