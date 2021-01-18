@@ -1,80 +1,36 @@
 ﻿%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{粗視化分子動力学(CGMD)法}
-本研究で用いる粗視化メソMD法では，粘土分子の単位構造とそこに水和された水分子を
-一つの粗視化粒子として扱う．一つの粘土分子は，分子サイズに応じた数の粗視化粒子を
-連結して用いることで表現される．粘土含水系の挙動は，粗視化粒子の集合としての
-粘土分子モデルが複数存在して力学的に相互作用をする様を解析することで調べられる．
-それぞれの粗視化粒子の位置と速度は，分子内および分子間の相互作用力に従って運動する
-ため，粗視化粒子に作用する分子内力，分子間力をモデル化し，運動方程式を数値的積分
-することが，メソMD解析に行うべき作業となる．以下，メソMD法で解くべき運動方程式と，
-本研究で用いる粗視化粒子間の相互作用モデルを示す．\\
-
-メソMDで扱う粘土分子の数を$M$, 第$m$番目の粘土分子を構成する粗視化粒子の数を$n(m)$と表す．
-粗視化粒子数の合計を
-\begin{equation}
-	N=\sum_{m=1}^M n(m)
-	\label{eqn:N_tot}
-\end{equation}
-とし，各粗視化粒子を識別するために，粒子には1から$N$の通し番号が振られているとする．
-時刻$t$における粒子$i$の位置を$\fat{x}_i(t)$,速度を$\fat{v}_i(t)$,質量を$m_i$
-とすれば，粒子$i$に関する運動方程式は
+本研究におけるCGMD法では、粘土分子の単位構造とそこに水和された水分子を一つの粗視化粒子として扱う．
+全$N$個の粗視化粒子のうち，第$i$番目のものの質量を$m_i$，
+速度ベクトルを$\fat{v}_i=\dot{\fat{x}}_i$とすれば，その運動方程式は
 \begin{equation}
 	m_i \dot {\fat{v}}_i =\fat{f}_i ,\ \ 
 	\dot{\fat{x}}_i = \fat{v}_i, \ \ ( i =1,2,\cdots N )
 	\label{eqn:eq_mot}
 \end{equation}
-と表される．ここに，$\fat{f}_i$は，粒子$i$に作用する力を表し，その内訳は
-分子間力$\fat{f}_i^{U}$と分子内力$\fat{f}_i^{K}$に分割でき
+と表される．ここに，$\fat{f}_i$は，粒子$i$に作用する力のベクトルを意味する．
+$\fat{f}_i$は，分子間力$\fat{f}_i^{U}$と分子内力$\fat{f}_i^{K}$の和として
 \begin{equation}
 	\fat{f}_i=\fat{f}_i^U+\fat{f}_i^K
 	\label{eqn:f_tot}
 \end{equation}
-と表わされる．第$m$番目の粘土分子を構成する粒子を，粒子番号の集合により
-\begin{eqnarray}
-	\fat{I}(m) &=&
+と書くことができる．これら粒子に作用する力の与え方は既報(2018年度共同研究報告書)
+に述べた通りで，水和水の多寡は分子間力$f_i^U$に含まれるパラメータ$\sigma$で表現
+される．そこで，以下では$\fat{f}_i^U$の詳細を述べた後，いかにして系内での水分配置
+や，系内の総水分量を更新するかを示す．\\
+
+素視化粒子間に作用する分子間力は，レナード-ジョーンズ(LJ)型ペアポテンシャル:
+\begin{equation}
+	U(\fat{x}_i,\fat{x}_j; \sigma) 
+	= 4 \varepsilon 
 	\left\{ 
-		i_1(m), \, i_2(m), \, \cdots, i_{n(m)}(m)
-	\right\}
-	 \nonumber \\
-	&=&
-	\left\{ 
-		\left. i_k(m)\right| k=1,\cdots n(m)
-	\right\}
-	\label{eqn:set_Im}
-\end{eqnarray}
-と表す．ここで,粒子$i$が属する分子の番号を$m={\cal M}(i)$，分子${\cal M}(i)$を
-構成する粒子の中で，粒子$i$が第$k$番目のものであるとき，インデックス$k$を
-$k={\cal K}(i)$と書くことにする．一方，分子$m$の第$k$粒子に与えられた，
-全粗視化粒子中での通し番号を$i=i(m,k)$と表す．このような粒子の参照方法を用いれば，
-メソMD計算に用いる分子内力を次のように書くことができる．
-\begin{equation}
-	\fat{f}^K_i(\fat{x}_i)=
-	-\sum_{j \in \fat{I}(m(i))} K_{ij}
-	 \left( \left| \fat{x}_i -\fat{x}_j \right|-r^0_{ij}\right)
-	\hat{\fat{r}}_{ij}
+	\left(\frac{\sigma}{r_{ij}}\right)^{12}
+	-
+	\left(\frac{\sigma}{r_{ij}}\right)^6
+	\right\}, \ \ \left( r_{ij}=\left| \fat{x}_i-\fat{x}_j\right| \right)
 	\label{eqn:}
 \end{equation}
-ここで，$\hat{\fat{r}}_{ij}$は粒子$j$から粒子$i$の方向を指す単位ベクトル
-\begin{equation}
-	\hat{\fat{r}}_{ij} = \frac{\fat{x}_i-\fat{x}_j}
-	{r_{ij}}, \ \ \left( r_{ij}=\left| \fat{x}_i-\fat{x}_j\right|\right)
-	\label{eqn:}
-\end{equation}
-を，$K_{ij}$は第一および第2近接粒子間を連結するバネのバネ定数$K_1$，$K_2$により
-\begin{equation}
-	K_{ij}=\left\{
-	\begin{array}{cc}
-		K_1 & \left(\left|{\cal K}(i)-{\cal K}(j)\right|=1\right) \\
-		K_2 & \left(\left|{\cal K}(i)-{\cal K}(j)\right|=2\right) \\
-		0   & (otherwise)
-	\end{array}
-	\right.
-	\label{eqn:}
-\end{equation}
-で与えられる定数を意味する．また，$r^0_{ij}$は，分子内力を与える全てのバネが
-中立状態にあるとき，すなわち，分子内にひずみが発生していない状態での粒子$i$と
-粒子$j$間の距離を表す．
-一方，分子間力のモデルには次のようなポテンシャル関数を用いる．
+により、次のように与える．
 \begin{equation}
 	\fat{f}_i^U(\fat{x}_i)
 	=
@@ -84,68 +40,74 @@ $k={\cal K}(i)$と書くことにする．一方，分子$m$の第$k$粒子に�
 	\right\}
 	\label{eqn:}
 \end{equation}
-ここで$U(\fat{x}_i,\fat{x}_j;\sigma)$は，特性距離$\sigma$をパラメータにもつ
-レナード-ジョーンズ(LJ)型のポテンシャル関数
-\begin{equation}
-	U(\fat{x}_i,\fat{x}_j; \sigma) 
-	= 4 \varepsilon 
-	\left\{ 
-	\left(\frac{\sigma}{r_{ij}}\right)^{12}
-	-
-	\left(\frac{\sigma}{r_{ij}}\right)^6
-	\right\}
-	\label{eqn:}
-\end{equation}
-を意味する．\\
-
-以上の方程式に含まれる定数やパラメータの，物理的意味と数値について述べる．
-粗視化粒子の設定に従って決まる量には，質量$m_i$と分子間力を与えるバネの
-自然長$r^0_{i,i+1}, r^0_{i,i+2}$がある．本研究では，粗視化の単位を粘土分子
-の単位構造としているため，モンモリロナイトの分子構造から
+ここに、$\fat{x}_i$と$\fat{x}_j$は，現在時刻における粒子$i$と粒子$j$の位置ベクトルを，
+$\varepsilon$と$\sigma$はLJポテンシャルのパラメータを，$\nabla_{x_i}$は
+LJポテンシャルの第一引数$\fat{x}_i$に関する勾配を表す．なお，素視化粒子の質量は，
+粘土分子の単位構造の質量として
 \begin{equation}
 	m=2.468\times 10 ^{-24}[{\rm kg}]
-	, \ \ 
-	r^0_{i,i+1}=1[{\rm nm}], \ \ 
-	r^0_{i,i+2}=2[{\rm nm}]
+\end{equation}
+とする．また，LJポテンシャルの特性距離を表すパラメータ$\sigma$は，素視化粒子間
+の接近限界を定めるため，これを水分量を表す変数として用いる．なお，モンモリロナイトの
+膨潤状態との対応は，X線回折試験によって得られた粘土層間距離から，
+概ね表\ref{tbl:tbl_sig}のようになる．$\sigma$は計算途上で変更する．
+一方$\varepsilon$は，粗視化粒子間相互作用の強さを決定するパラメータであり、
+事前に別途行った全原子MDシミュレーションの結果を参考に
+\begin{equation}
+	\varepsilon=1.0\times 10^{-19}[{\rm Nm}]
 	\label{eqn:}
 \end{equation}
-となる．膨潤状態に応じた層間距離を定めるパラメータ$\sigma$は，モンモリロナイト
-についてX線回折試験等の結果から知られている層間距離を参考に，表\ref{tbl:tbl_sig}
-に示す範囲で自由に設定することができる．
+とする．
 \begin{table}[h]
 	\begin{center}
 	\caption{分子間相互作用ポテンシャルにおける特性距離と膨潤状態の対応.}
 	\vspace{3mm}
-	\begin{tabular}{c||c|c|c|c}
-		膨潤状態 & 0層 & 1層 & 2層 & 3層 \\
+	\begin{tabular}{c||c|c|c|c|c}
+		膨潤状態 & 0層 & 1層 & 2層 & 3層 & $\cdots$\\
 		\hline
-		特性距離$\sigma$[{\rm nm}]& 0.9 & 1.2 & 1.5 & 1.8 \\
+		特性距離$\sigma$[{\rm nm}]& 0.9 & 1.2 & 1.5 & 1.8 & $\cdots$ \\
 	\end{tabular}
 	\label{tbl:tbl_sig}
 	\end{center}
 \end{table}
-一方，分子内力を定めるパラメータ$K_1, K_2$と,分子間相互作用の強さを与える
-パラメータ$\varepsilon$は，実験や理論的に決定することが難しいため，
-別途行った水和粘土の分子動力学計算結果を参考にして，以下の数値を与える．
-\begin{equation}
-	K_1=2,000[{\rm N/m}], \ \ 
-	K_2=4,000[{\rm N/m}], \ \ 
-	\varepsilon=1.0\times 10^{-19}[{\rm Nm}]
-	\label{eqn:}
-\end{equation}
-以上のように，本研究の粗視化MD法では，マクロ現象から推定する必要のある
-パラメータが含まれていないことが重要な点である．
-%
 \section{不均一な水和状態を表現するためのモデル}
 粘土分子表面に水和した水分の移動を許容する場合，空間的に水分量の偏りが生じる．
-そのような状況をメソMD計算上で表現するためには，粗視化粒子毎に水和水の量が
-異なることを表現できるモデルが必要になる．前節で述べたように，粗視化粒子に
-属する水和水の量は，LJポテンシャルの特性距離$\sigma$の値で制御される．
-これまでの粗視化メソMD計算では，$\sigma$の値は全ての粗視化粒子で同一かつ
-時間的にも変化しないとしていた．これに対して本研究では，$\sigma$が粒子毎
-に異なり，さらに，粘土分子の一方の面と他方の面(表裏面)における水和水分量
-が異なる状態も表現できるように，特性距離$\sigma$に以下のように方向依存性
-を与える．\\
+そのような状況を計算上で表現するためには，水和水量を与えるパラメータ$\sigma$を
+粒子のペア毎に設定する必要がある．
+
+粒子$i$が属する粘土分子の一方の面を$S^+$，他方の面を$S^-$と表す．
+粒子$i$の位置$\fat{x}_i$における$S^+$の法線ベクトルを$\fat{n}_i$とし，
+ここで，粘土分子の厚さは無視できるものとして$\fat{x}_i$における
+$S^-$の法線ベクトルを$-\fat{n}$とする．
+粒子$i$の$S^+$側に水和した水和水層の厚さを$\sigma_i^+$，$S^-$側の厚さを$\sigma_i^-$
+と書く．このとき，粒子$i$と粒子$j$の間のペアポテンシャルの特性距離$\sigma$を
+\begin{equation}
+	\sigma=\sigma_i(\theta_{ij})+\sigma_j(\theta_{ji})
+\end{equation}
+で与える．
+\begin{equation}
+	\alpha_{ij}
+	=	
+	\fat{n}_i\cdot \frac{\fat{x}_j-\fat{x}_i}{r_{ij}}		
+\end{equation}
+\begin{equation}
+	\sigma_i=\left\{
+	\begin{array}{cc}
+		\sigma_i^+ & (\alpha_{ij} \ge 0)\\
+		\sigma_i^- & (\alpha_{ij} <0)
+	\end{array}
+	\right.
+\end{equation}
+\begin{equation}
+	\sigma_j=\left\{
+	\begin{array}{cc}
+		\sigma_j^+ & (\alpha_{ji} \ge 0)\\
+		\sigma_j^- & (\alpha_{ji} <0)
+	\end{array}
+	\right.
+\end{equation}
+
+と表す.
 
 粒子$i$に属する水分量を表現するための特性距離を$\sigma_i(\theta_i)$と表す．
 ここに$\theta_i$は，粒子位置$\fat{x}_i$において，粘土分子表面への
@@ -167,66 +129,7 @@ $k={\cal K}(i)$と書くことにする．一方，分子$m$の第$k$粒子に�
 区別することができるので，以下では$\hat{\fat{n}}$側の水分量を表す特性距離を
 $\sigma^+_i$, $-\hat{\fat{n}}$側の水分量を表す特性距離を
 $-\sigma^+_i$,と下記，表裏面毎に量の水分を保持した状態を表現できるようにする．
-一方， 2つの粗視化粒子間に働く分子間相互作用力を計算するための${\sigma}$の値は，
-粘土分子内で隣接する粗視化粒子間の分子間相互作用は無視できると考えられるため，
-$\hat{\fat{t}}_i$方向($\theta_i=0,\pi$)の方向では，
-$\sigma$を$\sigma_i(0)=\sigma^0=1.35$[nm]となるようにする．
-これ以外の方位$\theta_i$では，長軸と短軸径が$\sigma^\pm$と
-$\sigma_0$で与えられる楕円で補間して与える．
-すなわち，
-\begin{equation}
-	\left( \frac{\sigma_t}{\sigma^0} \right)^2
-	+
-	\left( \frac{\sigma_n}{\sigma^{{\rm sgn}(\theta_i)}_i} \right)^2
-	=
-	1
-	\label{eqn:sigma_ellip}
-\end{equation}
-と
-\begin{equation}
-	\sigma_t=\sigma(\theta_i)\cos\theta_i, \ \ 
-	\sigma_n=\sigma(\theta_i)\sin\theta_i
-	\label{eqn:local_basis}
-\end{equation}
-%\begin{equation}
-%	\sigma=\sqrt{\sigma_t^2 +\sigma_n^2}
-%	\label{eqn:}
-%\end{equation}
-とから，
-\begin{equation}
-	\frac{1}{\sigma_i(\theta_i)}
-	=
-	\sqrt{
-		\left( 
-		\frac{\cos\theta_i}{\sigma_0} 
-		\right)^2
-		+
-		\left( 
-			\frac{\sin\theta_i}{\sigma_i^{{\rm sgn}(\theta_i)}}
-		\right)^2
-	}
-	\label{eqn:sigma_th}
-\end{equation}
-によって与える．
-粒子$i$と粒子$j$の間で作用する分子間力を計算するときには，
-以上の方向依存性を持つ特性距離$\sigma_i,\sigma_j$を,
-それぞれの粒子について
-\begin{equation}
-	\theta_{ij}={\rm sgn} \left(\hat{\fat{n}_i}\cdot\hat{\fat{r}}_{ij} \right) 
-	\cos^{-1}(\hat{\fat{t}_i}\cdot \hat{\fat{r}}_{ij})
-	\label{eqn:def_thij}
-\end{equation}
-として，
-\begin{equation}
-	\sigma_i=\sigma_i(\theta_{ij}), \ \
-	\sigma_j=\sigma_j(\theta_{ji})
-	\label{eqn:def_thi_thj}
-\end{equation}
-で計算し，これらの平均：
-\begin{equation}
-	\bar \sigma= \frac{\sigma_i(\theta_{ij})+\sigma_j(\theta_{ji})}{2}
-	\label{eqn:def_thb}
-\end{equation}
+
 をLJポテンシャルの特性距離として用いる．このようにすることで，相互作用を計算する
 粗視化粒子の相対距離と方向に応じて引力と斥力圏が定まり，
 水和水分量に応じた相互作用力を与えることができる．
