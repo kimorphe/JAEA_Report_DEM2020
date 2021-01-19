@@ -1,25 +1,33 @@
 ﻿%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{粗視化分子動力学(CGMD)法}
+\subsection{運動方程式}
 本研究におけるCGMD法では、粘土分子の単位構造とそこに水和された水分子を一つの粗視化粒子として扱う．
-全$N$個の粗視化粒子のうち，第$i$番目のものの質量を$m_i$，
-速度ベクトルを$\fat{v}_i=\dot{\fat{x}}_i$とすれば，その運動方程式は
+ここで，全部で$N$個の粗視化粒子のうち第$i$番目のものの質量を$m_i$，
+速度ベクトルを$\fat{v}_i=\dot{\fat{x}}_i$，位置ベクトルを$\fat{x}_i$とすれば，
+粒子$i$の運動方程式は
 \begin{equation}
 	m_i \dot {\fat{v}}_i =\fat{f}_i ,\ \ 
 	\dot{\fat{x}}_i = \fat{v}_i, \ \ ( i =1,2,\cdots N )
 	\label{eqn:eq_mot}
 \end{equation}
-と表される．ここに，$\fat{f}_i$は，粒子$i$に作用する力のベクトルを意味する．
-$\fat{f}_i$は，分子間力$\fat{f}_i^{U}$と分子内力$\fat{f}_i^{K}$の和として
+と表される．ただし，$\fat{f}_i$は，粒子$i$に作用する力のベクトルを意味する．
+また，素視化粒子の質量は，粘土分子の単位構造の質量として
+\begin{equation}
+	m=2.468\times 10 ^{-24}[{\rm kg}]
+	\label{eqn:mass}
+\end{equation}
+と与えられる．$\fat{f}_i$は分子間力$\fat{f}_i^{U}$と分子内力$\fat{f}_i^{K}$の和として
 \begin{equation}
 	\fat{f}_i=\fat{f}_i^U+\fat{f}_i^K
 	\label{eqn:f_tot}
 \end{equation}
-と書くことができる．これら粒子に作用する力の与え方は既報(2018年度共同研究報告書)
-に述べた通りで，水和水の多寡は分子間力$f_i^U$に含まれるパラメータ$\sigma$で表現
-される．そこで，以下では$\fat{f}_i^U$の詳細を述べた後，いかにして系内での水分配置
-や，系内の総水分量を更新するかを示す．\\
+と書くことができる．粒子に作用するこれらの力の与え方は既報(2018年度共同研究報告書)
+に述べた通りであり，水和水の多寡は分子間力$f_i^U$に含まれるパラメータ$\sigma$で表現される．
+本年度の研究では，水和水量の増減による膨潤や膨潤圧の発生に関するシミュレーションを行う．
+その方法を示すために，ここででは$\fat{f}_i^U$の詳細を述べる．その後，いかにして粘土含水系内での水分配置や，
+水分の総量量を更新するかについて説明する．\\
 
-素視化粒子間に作用する分子間力は，レナード-ジョーンズ(LJ)型ペアポテンシャル:
+素視化粒子間に作用する分子間力は，レナード-ジョーンズ(LJ)型のペアポテンシャル:
 \begin{equation}
 	U(\fat{x}_i,\fat{x}_j; \sigma) 
 	= 4 \varepsilon 
@@ -28,9 +36,9 @@ $\fat{f}_i$は，分子間力$\fat{f}_i^{U}$と分子内力$\fat{f}_i^{K}$の和
 	-
 	\left(\frac{\sigma}{r_{ij}}\right)^6
 	\right\}, \ \ \left( r_{ij}=\left| \fat{x}_i-\fat{x}_j\right| \right)
-	\label{eqn:}
+	\label{eqn:LJ}
 \end{equation}
-により、次のように与える．
+を用いて次のように与える．
 \begin{equation}
 	\fat{f}_i^U(\fat{x}_i)
 	=
@@ -38,26 +46,22 @@ $\fat{f}_i$は，分子間力$\fat{f}_i^{U}$と分子内力$\fat{f}_i^{K}$の和
 	\left\{ 
 		\sum_{j=1, \, j \neq i}^N U\left(\fat{x}_i,\,\fat{x}_j; \sigma \right)
 	\right\}
-	\label{eqn:}
+	\label{eqn:fiU}
 \end{equation}
-ここに、$\fat{x}_i$と$\fat{x}_j$は，現在時刻における粒子$i$と粒子$j$の位置ベクトルを，
-$\varepsilon$と$\sigma$はLJポテンシャルのパラメータを，$\nabla_{x_i}$は
-LJポテンシャルの第一引数$\fat{x}_i$に関する勾配を表す．なお，素視化粒子の質量は，
-粘土分子の単位構造の質量として
-\begin{equation}
-	m=2.468\times 10 ^{-24}[{\rm kg}]
-\end{equation}
-とする．また，LJポテンシャルの特性距離を表すパラメータ$\sigma$は，素視化粒子間
-の接近限界を定めるため，これを水分量を表す変数として用いる．なお，モンモリロナイトの
-膨潤状態との対応は，X線回折試験によって得られた粘土層間距離から，
-概ね表\ref{tbl:tbl_sig}のようになる．$\sigma$は計算途上で変更する．
-一方$\varepsilon$は，粗視化粒子間相互作用の強さを決定するパラメータであり、
-事前に別途行った全原子MDシミュレーションの結果を参考に
+ここに$\fat{x}_i$と$\fat{x}_j$は，現在時刻における粒子$i$と粒子$j$の位置ベクトルを，
+$\varepsilon$と$\sigma$はLJポテンシャルのパラメータを，$\nabla_{x_i}=\frac{\partial}{\partial \fat{x}_i}$
+はLJポテンシャルの 第一引数$\fat{x}_i$に関する勾配を表す．
+LJポテンシャルの特性距離を与えるパラメータ$\sigma$は，素視化粒子間の接近限界，すなわち，粘土分子が積層
+した際の層間距離を定める．従って，これを当該粒子に水和した水分の量を表す変数と考えることができる．
+なお，モンモリロナイトの膨潤状態と$\sigma$の対応は，X線回折試験によって得られた粘土層間距離から
+概ね表\ref{tbl:tbl_sig}のようになる．$\sigma$の値は計算途上で適宜更新され，$0.9$nm以上の値をとる．
+一方，$\varepsilon$は，粗視化粒子間相互作用の強さを決定するパラメータであり、
+事前に行った全原子MDシミュレーションの結果を参考に
 \begin{equation}
 	\varepsilon=1.0\times 10^{-19}[{\rm Nm}]
-	\label{eqn:}
+	\label{eqn:LJ_eps}
 \end{equation}
-とする．
+と与え，こちらは定数としている．
 \begin{table}[h]
 	\begin{center}
 	\caption{分子間相互作用ポテンシャルにおける特性距離と膨潤状態の対応.}
@@ -70,69 +74,43 @@ LJポテンシャルの第一引数$\fat{x}_i$に関する勾配を表す．な�
 	\label{tbl:tbl_sig}
 	\end{center}
 \end{table}
-\section{不均一な水和状態を表現するためのモデル}
+\subsection{特性距離の設定}
 粘土分子表面に水和した水分の移動を許容する場合，空間的に水分量の偏りが生じる．
 そのような状況を計算上で表現するためには，水和水量を与えるパラメータ$\sigma$を
-粒子のペア毎に設定する必要がある．
+粒子ペア毎に設定する必要がある．また，粘土分子の一方の面と他方の面に水和した
+水分量が異なる場合，粘土分子の上下いずれのと相互作用するかを区別して
+ペアポテンシャルを評価する必要がある．これらのことを考慮し，本研究では以下の
+手順で$\sigma$の値を設定する．
 
-粒子$i$が属する粘土分子の一方の面を$S^+$，他方の面を$S^-$と表す．
-粒子$i$の位置$\fat{x}_i$における$S^+$の法線ベクトルを$\fat{n}_i$とし，
-ここで，粘土分子の厚さは無視できるものとして$\fat{x}_i$における
-$S^-$の法線ベクトルを$-\fat{n}$とする．
-粒子$i$の$S^+$側に水和した水和水層の厚さを$\sigma_i^+$，$S^-$側の厚さを$\sigma_i^-$
-と書く．このとき，粒子$i$と粒子$j$の間のペアポテンシャルの特性距離$\sigma$を
+粒子$i$と粒子$j$に関するペアポテンシャル(\ref{eqn:LJ})の特性距離$\sigma$について考える．
+いま，粒子$i$が属する粘土分子の一方の面を$S^+$，他方の面を$S^-$とし，位置$\fat{x}_i(\in S^+)$
+における$S^+$の法線ベクトルを$\fat{n}_i$と表す．
+また，粘土分子の厚さは幅に比べて十分小さいと考え，$\fat{x}_i$における$S^-$(裏面側)の
+法線ベクトルを$-\fat{n}$とする．ここで，粒子$i$の$S^+$側に水和した水和水層の厚さを
+$s_i^+$，$S^-$側の厚さを$s_i^-$と書く．
+このとき，粒子$j$が$\fat{n}^+$の側にある場合は$S^+$と，$-\fat{n}$の側にある場合は
+$S^-$と相互作用すると考えることができる．
+そこで，該当する側の面を水和水層厚$s_i$を
 \begin{equation}
-	\sigma=\sigma_i(\theta_{ij})+\sigma_j(\theta_{ji})
-\end{equation}
-で与える．
-\begin{equation}
-	\alpha_{ij}
-	=	
-	\fat{n}_i\cdot \frac{\fat{x}_j-\fat{x}_i}{r_{ij}}		
-\end{equation}
-\begin{equation}
-	\sigma_i=\left\{
+	s_i=\left\{
 	\begin{array}{cc}
-		\sigma_i^+ & (\alpha_{ij} \ge 0)\\
-		\sigma_i^- & (\alpha_{ij} <0)
+		s_i^+ & (h(\fat{x}_i,\fat{x}_j) \ge 0)\\
+		s_i^- & (h(\fat{x}_j,\fat{x}_i) <0)
 	\end{array}
 	\right.
+	\label{eqn:si_switch}
 \end{equation}
 \begin{equation}
-	\sigma_j=\left\{
-	\begin{array}{cc}
-		\sigma_j^+ & (\alpha_{ji} \ge 0)\\
-		\sigma_j^- & (\alpha_{ji} <0)
-	\end{array}
-	\right.
+	h(\fat{x}_i,\fat{x}_j) =\fat{n}_i\cdot \left(\fat{x}_j-\fat{x}_i\right)
+	\label{eqn:h_sgn}
 \end{equation}
-
-と表す.
-
-粒子$i$に属する水分量を表現するための特性距離を$\sigma_i(\theta_i)$と表す．
-ここに$\theta_i$は，粒子位置$\fat{x}_i$において，粘土分子表面への
-接線方向から測ったポテンシャルの計算点$\fat{y}$の方位を表す．
-図\ref{fig:fig9}に示すように，粒子$i$の位置$\fat{x}_i$における
-単位接線ベクトルを$\hat{\fat{t}}_i$, 単位法線ベクトルを$\hat{\fat{n}}_i$
-とするとき，$\fat{x}_i$から$\fat{y}$を指す単位ベクトルは
+で選択し，粒子$i$と粒子$j$の間のペアポテンシャルの特性距離$\sigma$を
 \begin{equation}
-	\hat{\fat{r}}=\frac{\fat{y}-\fat{x}_i}{\left| \fat{y}-\fat{x}_i\right|}
-	\label{eqn:def_rhat}
+	\sigma=s_i+s_j
+	\label{eqn:sig_ij}
 \end{equation}
-と表され，方位$\theta_i$は次の式で与えられる．
-\begin{equation}
-	\theta_i = {\rm sgn} (\hat{\fat{n}}_i \cdot \fat{r}) 
-	\cos^{-1}\left( \hat{\fat{t}}_i\cdot \hat{\fat{r}}\right)
-	\label{eqn:def_th}
-\end{equation}
-なお，粘土分子の表裏面は，単位法線ベクトル$\pm \hat{\fat{n}}_i$の符号で
-区別することができるので，以下では$\hat{\fat{n}}$側の水分量を表す特性距離を
-$\sigma^+_i$, $-\hat{\fat{n}}$側の水分量を表す特性距離を
-$-\sigma^+_i$,と下記，表裏面毎に量の水分を保持した状態を表現できるようにする．
-
-をLJポテンシャルの特性距離として用いる．このようにすることで，相互作用を計算する
-粗視化粒子の相対距離と方向に応じて引力と斥力圏が定まり，
-水和水分量に応じた相互作用力を与えることができる．
+で与える．このようにすることで，粘土分子の表裏面を区別し，位置に応じて
+異なる水和水の分布を表現することができる．
 %--------------------
 \begin{figure}[h]
 	\begin{center}
@@ -150,147 +128,76 @@ $-\sigma^+_i$,と下記，表裏面毎に量の水分を保持した状態を表
 	\label{fig:fig9}
 \end{figure}
 %--------------------
-%\begin{equation}
-%	\frac{1}{\sigma_i(\theta_{ij})}
-%	=
-%	\sqrt{
-%		\left( 
-%		\frac{\cos\theta_{ij}}{\sigma_0} 
-%		\right)^2
-%		+
-%		\left( \frac{\sin\theta_{ij}}{\sigma_{{\rm sgn}(\theta_{ij})}} \right)^2
-%	}
-%	\label{eqn:}
-%\end{equation}
-\section{水和水移動のモデル}
-粘土含水系が非平衡状態にあるとき，時間経過に伴い系全体のもつポテンシャルエネルギーが
-低下する方向に状態が推移する．従って，系全体のポテンシャルエネルギーが現在の状態よりも
-下がる水分の配置をメソMD計算の途上で見つけることができれば，水分移動を考慮しながら，
-水和粘土の運動を追跡することができる．メソMD計算における粗視化粒子系全体のエネルギー$E_{tot}$は，各粒子の持つエネルギー$E_i$の総和であるため，
+\subsection{時間ステッピング}
+CGMD法では粒子位置$\fat{x}_i$と速度$\fat{v}_i$に加え，水和層厚$s_i^\pm$が
+系の時間発展に伴う更新の対象となる未知量である．
+以下，これらの未知量をまとめて
 \begin{equation}
-	E_{tot}(\fat{\sigma},\fat{V},\fat{X})=\sum_{i=1}^{N}E(i), 
-	 \ \ 
-	 \left( \fat{\sigma}=\left\{ \sigma^{\pm}_i \right\}
-	 ,
-	\ \
-	 \fat{V}=\left\{ \fat{v}_i\right\}
-, \fat{X}=\left\{\fat{x}_i \right\} 
-	 \right)
-	\label{eqn:Etot}
+	\fat{V}=\left\{ \fat{v}_1,\, \fat{v}_2,\, \dots \fat{v}_N \right\}
+	\label{eqn:defV}
 \end{equation}
-と表すことができる．ここで，$\fat{\sigma}$は，全ての粗視粒子の
-もつ水分量(系全体での水分分布)を表す$2N$次元のベクトルを，
-$\fat{X}$と$\fat{V}$は，粒子系の位置と速度を表す$2N$次元のベクトルである．
-式(\ref{eqn:Etot})は，これらを引数に書くことで，全エネルギーが
-位置$\fat{X}$，速度$\fat{V}$，水分分布$\fat{\sigma}$に依存する
-ことを明示することを意図している．各粗視化粒子のもつエネルギーは，
-粘土分子の表面(+面)と裏面(-面)に水和した水分に関連付けられるものの，
-2つに分割することができる．すなわち，
 \begin{equation}
-	E(i)=E^+(i)+E^-(i)
-	\label{eqn:sum_Epm}
+	\fat{X}=\left\{ \fat{x}_1,\, \fat{x}_2,\, \dots \fat{x}_N \right\}
+	\label{eqn:defV}
 \end{equation}
-と表すことができる．さらに，$E^\pm(i)$は，次のような4つの形態のエネルギーの和
-として表すことができる．
 \begin{equation}
-	E^\pm(i)=E^\pm_{U}(i)+E^\pm_K(i)+E^\pm_{H_2O}(i)+E^\pm_{Surf}(i)
-	\label{eqn:Emodes}
+	\fat{\Sigma}=\left\{ \fat{s}_1^\pm,\, \fat{s}_2^\pm,\, \dots \fat{s}_N^\pm \right\}
+	\label{eqn:defV}
 \end{equation}
-ここに，
-$E^{\pm}_U$は，粘土分子間の相互作用力によるポテンシャルエネルギーを，
-$E^\pm_K$は運動エネルギーを表す．また，$E^\pm_{H_2O}$は
-粘土分子とそれに水和した水分子の相互作用によって生じるポテンシャル
-エネルギーを表し，$E^\pm_{Surf}$は水和水の表面自由エネルギーを意味する．
-このうち$E^\pm_U(i)$は，異方的LJポテンシャルと式(\ref{eqn:def_thij})を用いて
+とし，各々の時間ステッピングにともなう増分を$\Delta \fat{V},\Delta \fat{X}$および$\Delta \fat{\Sigma}$表す．
+これらの量の内、位置と速度の更新は，
+運動方程式(\ref{eqn:eq_mot})を差分法で離散化して時間積分することによって行う．
+なお，これらの量の更新時には$\fat{\Sigma}$は一定として行う．
+すなわち，
 \begin{equation}
-	E_U^\pm(i)=\sum_{j} U(\fat{x}_i,\fat{x}_j)H({\rm sgn}(\pm \theta_{ij}))
-	\label{eqn:def_EU}
+	\left( \fat{V},\,\fat{X} \right)
+	\rightarrow 
+	\left( \fat{V},\,\fat{X} \right)
+	+
+	\left. \left( \Delta \fat{V},\, \Delta \fat{X} \right) \right|_{\fat{\Sigma}}
+	\label{eqn:vx_update}
 \end{equation}
-によって計算できる．ただし$H(x)$はヘビサイドの単位ステップ関数：
+とする. なお，離散化のための差分スキームにはleap-frog法による中央差分を用いる．
+一方，水分分布$\fat{\Sigma}$の更新はモンテカルロ法を用い，その間$(\fat{V},\fat{X})$は一定とする．
+すなわち
 \begin{equation}
-	H(x)=\left\{
-	\begin{array}{cc}
-		1& (x>0)  \\
-		0& (x\leq 0) 
-	\end{array}
-	\right.
-	\label{eqn:Step_func}
+	\fat{\Sigma} \rightarrow \fat{\Sigma} + \left. \Delta \fat{\Sigma} \right|_{\fat{V},\fat{X}}
+	\label{eqn:s_update}
 \end{equation}
-である．運動エネルギーは，粒子速度$\fat{v}_i$を用い，
+とする．モンテカルロ法では，疑似乱数を用いて系のエネルギー$U(\fat{V},\fat{X},\fat{\Sigma})$が低減する方向へ状態を更新する．
+ここでは二種類の状態更新を行う．
+はじめに，粒子のペアを無作為に選択し，これらの粒子間で水分の授受が発生したときのエネルギーの増減$\Delta U$
+を計算し，$\Delta U<0$の場合に実際に(\ref{eqn:s_update})のように水分の状態を更新する．
+これにより、系内の水分量を一定に保った状態で、水分分布状態を変更することができる。
+次に，一つの粒子を無作為に選択し，その水分量を所定の量だけ増減させた場合に生じるエネルギー変化$\Delta U$を
+計算する．その結果エネルギーが減少する場合は，実際に水分量を変化させて状態を更新する．
+これにより，系内の水分量を変化させることができる。
+次節では，モンテカルロ法におけるエネルギーの具体的な評価方法を述べる．
+\section{水分量と水分分布に関するエネルギー}
+水分移動に関するモンテカルロ法で考える全エネルギーを$E$とし，これをと表す．
 \begin{equation}
-	E_K^{\pm}(i)=\frac{1}{2}m^{\pm}(i) |\fat{v}_i|^2 
-	\label{eqn:def_EK}
-\end{equation}
-と書くことができる．ここに，$m^\pm(i)$は,粒子質量$m_i$の分割
-\begin{equation}
-	m_i=m^+(i)+m^-(i)
-	\label{eqn:mi_split}
-\end{equation}
-を表し,$m^{\pm}$はそれぞれ，$\pm\hat{\fat{n}}_i$側の分子表面に
-関連付けることのできる質量を意味する．$m^\pm$は，
-無水粘土分子の単位構造が持つ質量を$m_{clay}$, 
-水分子1個の質量$m_{H_2O}$,
-水和水の分子層数$n^{\pm}$を用いて
-\begin{equation}
-	m^{\pm}(i)=\frac{m_{clay}}{2}+\frac{3}{2}n_{H_2O}^{\pm}(i)m_{H_2O}
-	\label{eqn:def_mpm}
-\end{equation}
-と書くことができる．なお，$\pm$は着目する粘土分子の面の向きを表し，
-係数$3$は，粘土分子単位構造に一層の水分子が水和したときの
-単位構造あたりの水分子数である．
-水和水と粘土分子の相互作用によるポテンシャルエネルギーに関しては，
-水和数$n^\pm_{H_2O}$の関数になると仮定し，
-\begin{equation}
-	E_{H_2O}^\pm(i)=U_{hyd}
-	\left(
-		n^\pm_{H_2O}(i)
-	\right)
-	\label{eqn:def_EH2O}
-\end{equation}
-と表しておく．$U_{hyd}(n)$は水和数によるエネルギー変化を定める
-関数である．粘土分子への水和挙動を$n^\pm$が離散的な値だけをとるとして
-モデル化する場合，$U_{hyd}(n)$はデルタ間数列で，
-水和数が連続的に変化する場合は，水和数$n$が整数のときに
-極小となるような連続関数として与えればよい．本研究では後者のモデルを用いる
-ことを検討しているが，後述する数値計算例ではこのエネルギーの変動は考慮していない.
-最後に，水分子の表面エネルギーは，気相-水分子相界面の界面自由エネルギー
-$\gamma$と，粒子$i$の液相-気相界面$S^\pm_{a/w}(i)$を用いて，
-\begin{equation}
-	E_{Surf}^{\pm}(i)=\int_{S^\pm_{a/w}(i)}\gamma dS 
-	\label{eqn:def_Esurf}
-\end{equation}
-で与えられる．なお，液相と固相(粘土分子)界面のエネルギーは
-$E^\pm_{H_2O}$に含まれると考えておく．
-以上のようにして計算される全エネルギーについて，水分分布$\fat{\sigma}$に
-関する摂動:
-\begin{equation}
-	\delta \fat{\sigma}=\left\{ \delta \sigma^\pm_i \right\}
-	\label{eqn:var_sig}
-\end{equation}
-を，全水分量一定:
-\begin{equation}
-	\sum_{i=1}^N \left( 
-		\delta \sigma^+_i
-		+
-		\delta \sigma^-_i
-	\right)
-	=0
-\end{equation}
-の条件において与え，そのときの全エネルギ-$E_{tot}$の変分
-\begin{equation}
-	\Delta E_{tot}(\fat{\sigma},\fat{V},\fat{X})=
-	E_{tot}(\fat{\sigma}+\delta \fat{\sigma},\fat{V},\fat{X})
-	-
-	E_{tot}(\fat{\sigma},\fat{V},\fat{X})
+	E=U_{LJ} +U_{hyd} + U_n
 	\label{eqn:}
 \end{equation}
-を数値的に計算する．
-$\Delta E_{tot}$が負の場合には水分分布を
+ここで，$U$は粗視化粒子間の相互作用，
+$U_{hyd}$は水分子と粘土分子の相互作用を，
+$U_N$は水分子数の増減に関するエネルギーをそれぞれ表す．
+このうち$U_{LJ}$は，式(\ref{eqn:LJ})を用いて計算される。
+一方、$U_{hyd}$は粗視化粒子内のエネルギーで、運動方程式や
+粒子間相互作用ポテンシャルには含まれないものである。
+そこで，$U_{hyd}$は後述するように別途モデル化して与える必要のあるものである。
+$U_N$は，水分量の変化がなければ一定値を保つエネルギーである．
+モンテカルロ法では、これらのエネルギーの増減だけが計算できればよい
+ため、必ずしも$U_N$そのものを計算できる必要はない。
+そこで、$U_N$の増分$\Delta U_n$を
 \begin{equation}
-	\fat{\sigma}\rightarrow \fat{\sigma}+\delta \fat{\sigma}
-	\label{eqn:sig_update}
+	\Delta U_n =\mu \Delta n
+	\label{eqn:}
 \end{equation}
-と更新する．運動方程式を数値的に積分する際の適当な時間ステップにおいて，
+と表す。ここに，$\mu$は外界(水分溜)の化学ポテンシャルを，
+$n$は水分子の総数を表す．
+
+運動方程式を数値的に積分する際の適当な時間ステップにおいて，
 このような規則に従い水分分布を変更することで，水和粘土分子の運動と変形
 だけでなく，粘土分子と水和水の相対的な運動(水和水移動)のシミュレーション
 を行うことができる．
