@@ -1,5 +1,4 @@
-git add Figs/*
-#git add Figs/*.eps
+git add Figs/*.svgz
 git add *.txt
 git add *.tex
 git add README
