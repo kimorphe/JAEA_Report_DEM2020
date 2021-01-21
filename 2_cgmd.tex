@@ -130,9 +130,8 @@ $S^-$と相互作用すると考えることができる．
 \end{figure}
 %--------------------
 \subsection{時間ステッピング}
-CGMD法では粒子位置$\fat{x}_i$と速度$\fat{v}_i$に加え，水和層厚$s_i^\pm$が
-系の時間発展に伴う更新の対象となる未知量である．
-以下，これらの未知量をまとめて
+CGMD法では粒子位置$\fat{x}_i$と速度$\fat{v}_i$に加え，水和層の厚さ$s_i^\pm$が
+系の時間発展に伴い更新の対象となる．以下，これらの未知量を
 \begin{equation}
 	\fat{V}=\left\{ \fat{v}_1,\, \fat{v}_2,\, \dots \fat{v}_N \right\}
 	\label{eqn:defV}
@@ -145,11 +144,10 @@ CGMD法では粒子位置$\fat{x}_i$と速度$\fat{v}_i$に加え，水和層厚
 	\fat{\Sigma}=\left\{ \fat{s}_1^\pm,\, \fat{s}_2^\pm,\, \dots \fat{s}_N^\pm \right\}
 	\label{eqn:defV}
 \end{equation}
-とし，各々の時間ステッピングにともなう増分を$\Delta \fat{V},\Delta \fat{X}$および$\Delta \fat{\Sigma}$表す．
-これらの量の内、位置と速度の更新は，
-運動方程式(\ref{eqn:eq_mot})を差分法で離散化して時間積分することによって行う．
-なお，これらの量の更新時には$\fat{\Sigma}$は一定として行う．
-すなわち，
+と表し，各々の時間ステッピングにともなう増分を$\Delta \fat{V},\Delta \fat{X}$，
+および$\Delta \fat{\Sigma}$と書く．これらの内、位置と速度の更新は運動方程式(\ref{eqn:eq_mot})を差分法で離散化して時間積分することによって行う．
+離散化のための差分スキームにはleapfrog法による中央差分を用いる．
+なお，$\fat{V}$と$\fat{X}$の更新時には$\fat{\Sigma}$を一定としておく．すなわち，
 \begin{equation}
 	\left( \fat{V},\,\fat{X} \right)
 	\rightarrow 
@@ -158,15 +156,14 @@ CGMD法では粒子位置$\fat{x}_i$と速度$\fat{v}_i$に加え，水和層厚
 	\left. \left( \Delta \fat{V},\, \Delta \fat{X} \right) \right|_{\fat{\Sigma}}
 	\label{eqn:vx_update}
 \end{equation}
-とする. なお，離散化のための差分スキームにはleap-frog法による中央差分を用いる．
-一方，水分分布$\fat{\Sigma}$の更新はモンテカルロ法を用い，その間$(\fat{V},\fat{X})$は一定とする．
+とする. 一方，水分分布$\fat{\Sigma}$の更新にはモンテカルロ法を用い，その際$(\fat{V},\fat{X})$は一定とする．
 すなわち
 \begin{equation}
 	\fat{\Sigma} \rightarrow \fat{\Sigma} + \left. \Delta \fat{\Sigma} \right|_{\fat{V},\fat{X}}
 	\label{eqn:s_update}
 \end{equation}
-とする．モンテカルロ法では疑似乱数を用いて系のエネルギー$U(\fat{V},\fat{X},\fat{\Sigma})$が低減する方向へ
-繰返し状態を更新する．ここでは水分の移動に関して，二種類の状態更新を行う．
+とする．モンテカルロ法では疑似乱数を用いて系のエネルギー$U(\fat{V},\fat{X},\fat{\Sigma})$が
+低減する方向へ繰返し状態を更新する．ここでは水分の移動に関して二種類の状態更新を行う．
 1つ目の状態更新では，粗視化粒子のペアを無作為に選択して，これらの粒子間で水分の授受を行うべきかを判定する．
 その際，水分授受が発生したの仮定の元でエネルギーの増減$\Delta U$を計算する．
 $\Delta U<0$の場合には，実際に(\ref{eqn:s_update})のように水分の状態を更新する．
@@ -175,7 +172,7 @@ $\Delta U<0$の場合には，実際に(\ref{eqn:s_update})のように水分の
 その仮定の元で生じるエネルギー変化$\Delta U$を計算し，$\Delta U<0$の場合に実際に当該粒子が保持する
 水分量を変化させる．この状態更新では，系内に含まれる水分の総量を変化させることができる。
 次節ではモンテカルロ法におけるエネルギー$U$の具体的な評価方法を述べる．
-\section{水分量と水分分布に関するエネルギー}
+\subsection{水分量と水分分布に関するエネルギー}
 水分移動に関する全エネルギーを$E$とし，これを
 \begin{equation}
 	E=U_{LJ} +U_{hyd} + U_n
@@ -215,22 +212,21 @@ $n$は水分子の総数を表す．
 	\label{eqn:}
 \end{equation}
 を与えることとした．
-\subsubsection{水和エネルギーモデル}
-粒子$i$の$S^\beta$面に関する水和エネルギーを$u^\beta_i(\beta=+,-)$とすれば，
-系の全水和エネルギーは
+\subsection{水和エネルギーモデル}
+粒子$i$の$S^\beta$面に関する水和エネルギーを$u^\beta_i(\beta=+,-)$とする．
+このとき， 系全体の水和エネルギーは
 \begin{equation}
 	U_{hyd}=\sum_{i=1}^N\sum_{\beta=+,-} u_i^{\beta}
 	\label{eqn:}
 \end{equation}
-で与えられる．
-$u^+_i$と$u^-_i$を与える関数は、粒子や面の向きに依らないと考えてよく，
+で与えられる．いま，$u^+_i$と$u^-_i$を与える関数は粒子や面の向きに依らないと考えてよく，
 \begin{equation}
 	u^\beta_i= u(s^\beta), \ \ (s^\beta>0,\, \beta=+,-)
 	\label{eqn:}
 \end{equation}
-と表される．そこで，$u$を水和水層の厚さ$s$の関数としてモデル化する．
+としてよい．そこで，$u$を水和水層の厚さ$s$の関数としてモデル化する．
 $u(s)$は$s$に対して大局的には減少する有界な関数である．
-また$u(0)=0$としてよいため，ここでは以下のように指数関数を用いて与える．
+また$u(0)=0$としてよいため，ここでは次の指数関数を用いて与える．
 \begin{equation}
 	u(s)=u_{\infty} \left(1-e^{-\gamma s} \right)
 	\label{eqn:u_s}
@@ -250,6 +246,10 @@ $\gamma$は
 	\label{eqn:}
 \end{equation}
 から$\gamma$の値を決定した．
+$u(s)$と$u'(s)$は図\ref{fig:fig0}に示すような形状をしている．
+このグラフでは横軸を半減距離$s_b$で無次元化して表示しているため，
+$u(s),u'(s)$とも$s/s_b=1$において$u(0),u'(0)$から値が半減している
+様子が示されている．
 %--------------------
 \begin{figure}[h]
 	\begin{center}

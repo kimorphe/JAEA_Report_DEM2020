@@ -1,0 +1,77 @@
+\section{水分量変化を許容したCGMDシミュレーション}
+最後に，定温定積，化学ポテンシャル一定の元で行った，CGMDシミュレーションの結果を示す．
+初期モデルは，前節で述べた冷却-等温等積緩和で得られた図\ref{fig:fig3}-(c)のものを
+用いる．これを初期モデルとして，1
+ユニットセルサイズを固定し，温度を300[K]に保ったまま
+一定の化学ポテンシャル$\tilde \mu$のもとで
+1[ns]の間，水分の出入りがある状態で粘土含水系を緩和させる．
+
+図\ref{fig:fig4}は，$\tilde \mu=0$の場合について組織構造の変化を示したものである．
+この場合，水分量の増減によるエネルギーの変化はなく，
+水和エネルギーの減少が，ポテンシャルエネルギーの増加を上回る限り，
+水分量が増加する．その結果、積層した粘土層間の距離が大きくなり，かつ層間距離が
+均一化する様子が見られる．
+例えば，図\ref{fig4}-(a)において(i)と(ii)の破線で囲んだ箇所では，当初，層間距離が
+に変動が見られるが，これらの箇所でも最終的には層間距離がほぼ一定の値に揃うことが
+わかる．また，粘土分子が折りたたまれて出来た空隙部分も水分の増加に伴い，その
+大きさは次第に小さくなっている．
+%
+一方図\ref{fig:fig5}は，化学ポテンシャルを
+\begin{equation}
+	\frac{\tilde \mu}{u'(0)}=
+	\frac{\tilde \mu}{\gamma u_\infty}=\frac{1}{5}
+	\label{eqn:mu02}
+\end{equation}
+とした場合の結果を示している．これは，水和エネルギー$u(s)$の勾配の最大値
+である$u'(0)=\gamma u_{\infty}$を基準にして化学ポテンシャルを与えることで, 
+完全に排水を起こす程のエネルギー増加とならないように設定したものである．
+図\ref{fig:fig5}に示した結果は，一部の水分が排出されることで，
+図$\tilde \mu=0$の場合よりも顕著な組織構造の変化が置きている．
+ぐたいてきには，水分量の減少によって生まれたスペースを使って粘土分子が
+移動することで，屈曲のが解消される箇所や，空洞が統合あるいは消失する様子が
+示されている．
+%--------------------
+\begin{figure}[h]
+	\begin{center}
+	\includegraphics[width=1.0\linewidth]{Figs/fig4.eps} 
+	\end{center}
+	\caption{
+		caption.
+	} 
+	\label{fig:fig4}
+\end{figure}
+%--------------------
+%--------------------
+\begin{figure}[h]
+	\begin{center}
+	\includegraphics[width=1.0\linewidth]{Figs/fig5.eps} 
+	\end{center}
+	\caption{
+		caption.
+	} 
+	\label{fig:fig5}
+\end{figure}
+%--------------------
+%--------------------
+\begin{figure}[h]
+	\begin{center}
+	\includegraphics[width=1.0\linewidth]{Figs/fig6.eps} 
+	\end{center}
+	\caption{
+		caption.
+	} 
+	\label{fig:fig6}
+\end{figure}
+%--------------------
+%--------------------
+\begin{figure}[h]
+	\begin{center}
+	\includegraphics[width=1.0\linewidth]{Figs/fig7.eps} 
+	\end{center}
+	\caption{
+		caption.
+	} 
+	\label{fig:fig7}
+\end{figure}
+%--------------------
+
