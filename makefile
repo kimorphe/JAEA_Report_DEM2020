@@ -6,7 +6,7 @@ report.dvi: report.tex 1_intro.tex 2_cgmd.tex 3_model.tex 4_results.tex\
 	Figs/fig4.eps Figs/fig5.eps\
 	Figs/fig6.eps Figs/fig7.eps Figs/fig8.eps\
 	Figs/fig9.eps Figs/fig10.eps\
-	Figs/fig11.eps Figs/fig12.eps 
+	Figs/fig11.eps Figs/fig12.eps Figs/fig13.eps
 	platex  report.tex
 
 Figs/fig0.eps: Figs/uhyd.svgz
@@ -35,3 +35,5 @@ Figs/fig11.eps: Figs/var_mu05.svgz
 	inkscape -z -f Figs/var_mu05.svgz -E Figs/fig11.eps
 Figs/fig12.eps: Figs/erg_mu05.svgz
 	inkscape -z -f Figs/erg_mu05.svgz -E Figs/fig12.eps
+Figs/fig13.eps: Figs/spm_model.svgz
+	inkscape -z -f Figs/spm_model.svgz -E Figs/fig13.eps
