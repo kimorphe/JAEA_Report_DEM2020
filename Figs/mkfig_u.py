@@ -13,8 +13,10 @@ ax1=fig1.add_subplot(111)
 fig2=plt.figure()
 ax2=fig2.add_subplot(111)
 
-ax1.plot(s,u0)
-ax2.plot(s,u1)
+#ax1.plot(s,-u0)
+#ax2.plot(s,-u1)
+ax1.plot(s,-u0)
+ax2.plot(s,-u1)
 
 ax1.grid(True)
 ax2.grid(True)
@@ -23,8 +25,10 @@ sz=14
 ax1.tick_params(labelsize=sz)
 ax2.tick_params(labelsize=sz)
 
-ax1.set_ylim([0,1])
-ax2.set_ylim([0,1])
+#ax1.set_ylim([0,1])
+#ax2.set_ylim([0,1])
+ax1.set_ylim([-1,0])
+ax2.set_ylim([-1,0])
 fig1.savefig("u0.png",bbox_inches="tight")
 fig2.savefig("u1.png",bbox_inches="tight")
 
