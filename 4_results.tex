@@ -1,8 +1,8 @@
 \section{水分量変化を許容したCGMDシミュレーション}
-本節では定温定積かつ化学ポテンシャル一定の下で行った粘土含水系の緩和シミュレーション結果を示す．
+本節では定温定積かつ指定された化学ポテンシャルの下で行った粘土含水系の緩和シミュレーション結果を示す．
 緩和シミュレーションの初期モデルには，前節で示した圧縮凝集と冷却過程を経て得られた組織構造モデルを用いる．
 ここでは，ユニットセルのサイズを初期モデルの状態で固定，温度を300[K]に設定し，
-一定の化学ポテンシャル$\tilde \mu$のもとで1[ns]間，CGMDシミュレーションを行う．
+予め指定した化学ポテンシャル$\tilde \mu$のもとで1[ns]間，CGMDシミュレーションを行う．
 \subsection{組織構造の変化}
 図\ref{fig:fig4}は，$\tilde \mu=0$として行った緩和シミュレーションで得られた
 組織構造を示したものである．この場合，$\tilde \mu=0$であることから，
@@ -42,7 +42,7 @@ $u'(0)=\gamma u_{\infty}$を基準$\mu_0$として化学ポテンシャルを与
 	\includegraphics[width=1.0\linewidth]{Figs/fig4.eps} 
 	\end{center}
 	\caption{
-		定積，定温，化学ポテンシャル一定での緩和挙動($\tilde \mu =0$の場合).
+		定積，定温，化学ポテンシャル$\tilde \mu =0$での緩和挙動.
 	} 
 	\label{fig:fig4}
 \end{figure}
@@ -53,7 +53,7 @@ $u'(0)=\gamma u_{\infty}$を基準$\mu_0$として化学ポテンシャルを与
 	\includegraphics[width=1.0\linewidth]{Figs/fig5.eps} 
 	\end{center}
 	\caption{
-		定積，定温，化学ポテンシャル一定での緩和挙動($\tilde \mu =\frac{1}{5}\mu_0 $の場合).
+		定積，定温，化学ポテンシャル$\tilde \mu =\frac{1}{5}\mu_0 $での緩和挙動.
 	} 
 	\label{fig:fig5}
 \end{figure}
@@ -152,8 +152,7 @@ $\mu \Delta N$と$\Delta U_{hyd}$がともに減少することは，
 	\includegraphics[width=1.0\linewidth]{Figs/fig9.eps} 
 	\end{center}
 	\caption{
-		化学ポテンシャル一定での緩和による
-		(a)温度, (b)応力と(c)エネルギーの変化 ($\tilde \mu=0$).
+		化学ポテンシャル$\tilde \mu=0$での緩和に伴う(a)温度, (b)応力と(c)エネルギーの変化 .
 	} 
 	\label{fig:fig9}
 \end{figure}
@@ -164,8 +163,8 @@ $\mu \Delta N$と$\Delta U_{hyd}$がともに減少することは，
 	\includegraphics[width=1.0\linewidth]{Figs/fig10.eps} 
 	\end{center}
 	\caption{
-		化学ポテンシャル一定での緩和による(a)温度, (b)応力と (c) エネルギーの変化
-		($\tilde \mu =\frac{1}{5}\mu_0).$
+		化学ポテンシャル$\tilde \mu =\frac{1}{5}\mu_0$
+		での緩和に伴う(a)温度, (b)応力と (c) エネルギーの変化.
 	} 
 	\label{fig:fig10}
 \end{figure}
@@ -212,7 +211,7 @@ $\mu \Delta N$と$\Delta U_{hyd}$がともに減少することは，
 	\includegraphics[width=0.8\linewidth]{Figs/fig11.eps} 
 	\end{center}
 	\caption{
-		定積，定温，化学ポテンシャル一定での緩和挙動($\tilde \mu =\frac{1}{2}\mu_0$の場合).
+		定積，定温，化学ポテンシャル$\tilde \mu =\frac{1}{2}\mu_0$での緩和挙動．
 	} 
 	\label{fig:fig11}
 \end{figure}
@@ -223,8 +222,8 @@ $\mu \Delta N$と$\Delta U_{hyd}$がともに減少することは，
 	\includegraphics[width=1.0\linewidth]{Figs/fig12.eps} 
 	\end{center}
 	\caption{
-		化学ポテンシャル一定での緩和により(a)温度, (b)応力と (c) エネルギーの変化
-		($\tilde \mu =\frac{1}{2}\mu_0).$
+		化学ポテンシャル$\tilde \mu =\frac{1}{2}\mu_0$での緩和に伴う
+		(a)温度, (b)応力と (c) エネルギーの変化．
 	} 
 	\label{fig:fig12}
 \end{figure}
